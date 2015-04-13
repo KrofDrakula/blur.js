@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+        <title>Blurry Video Test</title>
+        <style>
+            html, body { margin: 0; padding: 0; }
+        </style>
+    </head>
+    <body>
+        <video id="source" src="https://dl.dropboxusercontent.com/u/60786431/interstellar.mp4" style="display:block" width=480 autoplay muted controls></video>
+        <script src="blur.js"></script>
+        <script>
+            var v = document.getElementById('source'),
+                b = new Blur(v, { resolution: 'layout' });
+
+            b.init(function() {
+                requestAnimationFrame(draw);
+            });
+            
+            function draw(time) {
+                requestAnimationFrame(draw);
+                b.blur(4);
+            }
+        </script>
+    </body>
+</html>
