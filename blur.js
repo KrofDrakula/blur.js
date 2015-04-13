@@ -1,33 +1,42 @@
 (function(global) {
     
-    function Blur(source, hide) {
-        this.original = source;
-        this.doc      = this.original.ownerDocument;
-        this.blurred  = this.doc.createElement('canvas');
-        this.buffer   = this.doc.createElement('canvas');
+    function Blur(source, options) {
+        this.source  = source;
+        this.blurred = document.createElement('canvas');
+        this.buffer  = document.createElement('canvas');
         
-        this._hide = !!hide;
+        options = options || {};
+        
+        this.options = {
+            width      : options.width  || null,
+            height     : options.height || null,
+            resolution : options.resolution || 'native'
+        };
     }
     
     var p = Blur.prototype;
 
     p.init = function(ready) {
-        this.original.parentNode.insertBefore(this.blurred, this.original.nextSibling);
-        var eventName = this.original.nodeName == 'VIDEO' ? 'oncanplay' : 'onload';
-        if (!this.original.complete) this.original[eventName] = loaded.bind(this); else loaded.call(this);
+        this.source.parentNode.insertBefore(this.blurred, this.source.nextSibling);
+        var eventName = this.source.nodeName == 'VIDEO' ? 'oncanplay' : 'onload';
+        if (!this.source.complete) this.source[eventName] = loaded.bind(this); else setTimeout(loaded.bind(this), 0);
         function loaded() {
-            this.blurred.style.width  = this.original.offsetWidth + 'px';
-            this.blurred.style.height = this.original.offsetHeight + 'px';
-            this.blurred.width  = this.buffer.width  = this.original.offsetWidth;
-            this.blurred.height = this.buffer.height = this.original.offsetHeight;
-            if (this._hide) this.original.style.display = 'none';
+            this.blurred.style.width  = this.source.offsetWidth + 'px';
+            this.blurred.style.height = this.source.offsetHeight + 'px';
+            if (this.options.resolution == 'native') {
+                this.blurred.width  = this.buffer.width  = this.source.videoWidth  || this.source.naturalWidth;
+                this.blurred.height = this.buffer.height = this.source.videoHeight || this.source.naturalHeight;    
+            } else {
+                this.blurred.width  = this.buffer.width  = this.options.width  || this.source.offsetWidth;
+                this.blurred.height = this.buffer.height = this.options.height || this.source.offsetHeight;
+            }
             var ctx = this.blurred.getContext('2d');
-            ctx.drawImage(this.original, 0, 0, this.blurred.width, this.blurred.height);
+            ctx.drawImage(this.source, 0, 0, this.blurred.width, this.blurred.height);
             ready();
         }
     };
 
-    p.gaussianBlur = function(sigma) {
+    p.blur = function(sigma) {
         var blurCtx = this.blurred.getContext('2d'),
             bufferCtx = this.buffer.getContext('2d'),
             w = this.blurred.width,
@@ -37,7 +46,7 @@
             kernel = getKernel(sigma, kernelSize);
         
         bufferCtx.clearRect(0, 0, w, h);
-        bufferCtx.drawImage(this.blurred, 0, 0);
+        bufferCtx.drawImage(this.source, 0, 0, w, h);
         blurCtx.clearRect(0, 0, w, h);
         
         blurCtx.save();
@@ -48,6 +57,7 @@
         }
         blurCtx.restore();
         
+        bufferCtx.clearRect(0, 0, w, h);
         bufferCtx.drawImage(this.blurred, 0, 0, w, h);
         blurCtx.clearRect(0, 0, w, h);
         
@@ -62,20 +72,24 @@
 
     p.restore = function() {
         var ctx = this.blurred.getContext('2d');
-        ctx.drawImage(this.original, 0, 0, this.blurred.width, this.blurred.height);
+        ctx.drawImage(this.source, 0, 0, this.blurred.width, this.blurred.height);
     };
 
-    function gaussianDistribution(x, sigma) {
+    function nDist(x, sigma) {
         var n = 1 / (Math.sqrt(2 * Math.PI) * sigma);
         return Math.exp(-x * x / (2 * sigma * sigma)) * n;
     }
+    
+    function simpson(a, b, sigma) {
+        return (b - a) / 6 * (nDist(a, sigma) + 4 * nDist((a + b) / 2, sigma) + nDist(b, sigma));
+    }
 
     function getKernel(sigma, kernelSize) {
-        var kernel = [], sum = 0, x, i, g;
+        var kernel = [], sum = 0, x, i, j, v;
         for (i = 0; i < kernelSize; i++) {
             x = i - kernelSize / 2;
-            sum += g = gaussianDistribution(x, sigma);
-            kernel.push(g);
+            sum += v = simpson(x - 0.5, x + 0.5, sigma);
+            kernel.push(v);
         }
         for (i = 0; i < kernelSize; i++)
             kernel[i] /= sum;

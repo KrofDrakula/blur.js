@@ -1,2 +1,4 @@
 # blur.js
-Blur your images and video in realtime.
+
+Fast image blurring. Everywhere. Even on mobile devices.
+
