@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="initial-scale=1"/>
+        <title>SFX test</title>
+    </head>
+    <body>
+        <img src="imgs/wallhaven-128053.jpg" id="a" style="display:none"/>
+        <img src="imgs/wallhaven-161767.jpg" id="b" style="display:none"/>
+        <img src="imgs/wallhaven-178224.jpg" id="c" style="display:none"/>
+        <img src="imgs/wallhaven-179121.jpg" id="d" style="display:none"/>
+        <img src="imgs/wallhaven-56024.jpg" id="e" style="display:none"/>
+        <img src="imgs/wallhaven-62628.jpg" id="f" style="display:none"/>
+        <img src="imgs/wallhaven-74625.jpg" id="g" style="display:none"/>
+        <ul>
+            <li>Image: <input type="range" min="0" max="6" step="1" value="0" name="image"/></li>
+            <li>Gamma: <input type="range" min="0.5" max="2" step="0.01" value="1" name="gamma"/></li>
+            <li>Tint: <input type="range" min="0" max="1" step="0.01" value="0" name="tint"/> <input type="color" value="#ff0099" name="tint-color"/></li>
+            <li>Blur: <input type="range" min="0" max="10" step="0.01" value="0" name="blur"/></li>
+            <li>Chroma: <input type="range" min="0" max="50" step="0.01" value="0" name="chroma"/></li>
+            <li>Grain: <input type="range" min="0" max="1" step="0.01" value="0" name="grain"/></li>
+        </ul>
+        <script src="sfx.js"></script>
+        <script>
+            var sfx = new SFX(document.querySelector('#e')),
+                image = document.querySelector('input[name=image]'),
+                gamma = document.querySelector('input[name=gamma]'),
+                tint = document.querySelector('input[name=tint]'),
+                tintColor = document.querySelector('input[name=tint-color]'),
+                chroma = document.querySelector('input[name=chroma]'),
+                blur = document.querySelector('input[name=blur]'),
+                grain = document.querySelector('input[name=grain]');
+            
+            sfx.init(function(canvas) {
+                canvas.style.maxWidth = '100%';
+                document.body.appendChild(canvas);
+                image.addEventListener('change', refresh);
+                gamma.addEventListener('change', refresh);
+                tint.addEventListener('change', refresh);
+                tintColor.addEventListener('change', refresh);
+                chroma.addEventListener('change', refresh);
+                blur.addEventListener('change', refresh);
+                grain.addEventListener('change', refresh);
+                refresh();
+            });
+            
+            function refresh() {
+                var imgs = document.querySelectorAll('img');
+                sfx.source = imgs[image.value];
+                sfx._setCanvasSize(sfx.source.naturalWidth, sfx.source.naturalHeight);
+                sfx.redraw();
+                sfx
+                    .gamma(parseFloat(gamma.value))
+                    .tint(tintColor.value, parseFloat(tint.value))
+                    .blur(parseFloat(blur.value))
+                    .chromatic(parseFloat(chroma.value))
+                    .grain(parseFloat(grain.value));
+            }
+        </script>
+    </body>
+</html>
