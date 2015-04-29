@@ -55,7 +55,7 @@
                 sfx.source = imgs[image.value];
                 sfx._setCanvasSize(sfx.source.naturalWidth, sfx.source.naturalHeight);
                 sfx.redraw();
-                var startTime = performance.now();
+                var startTime = window.performance ? performance.now() : Date.now();
                 if (invert.checked) sfx.invert();
                 sfx
                     .gamma(parseFloat(gamma.value))
@@ -67,7 +67,7 @@
                     .blur(parseFloat(blur.value))
                     .chromatic(parseFloat(chroma.value))
                     .grain(parseFloat(grain.value));
-                console.log('Rendering time (ms):', performance.now() - startTime);
+                console.log('Rendering time (ms):', (window.performance ? performance.now() : Date.now()) - startTime);
             }
         </script>
     </body>
