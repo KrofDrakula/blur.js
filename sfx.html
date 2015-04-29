@@ -15,6 +15,7 @@
         <img src="imgs/wallhaven-74625.jpg" id="g" style="display:none"/>
         <ul>
             <li>Image: <input type="range" min="0" max="6" step="1" value="0" name="image"/></li>
+            <li>Invert: <input type="checkbox" value="1" name="invert"/></li>
             <li>Gamma: <input type="range" min="0.5" max="2" step="0.01" value="1" name="gamma"/></li>
             <li>Contrast: <input type="range" min="-1" max="1" step="0.01" value="0" name="contrast"/></li>
             <li>Brightness: <input type="range" min="-1" max="1" step="0.01" value="0" name="brightness"/></li>
@@ -29,6 +30,7 @@
         <script>
             var sfx = new SFX(document.querySelector('#a')),
                 image = document.querySelector('input[name=image]'),
+                invert = document.querySelector('input[name=invert]'),
                 gamma = document.querySelector('input[name=gamma]'),
                 contrast = document.querySelector('input[name=contrast]'),
                 brightness = document.querySelector('input[name=brightness]'),
@@ -54,6 +56,7 @@
                 sfx._setCanvasSize(sfx.source.naturalWidth, sfx.source.naturalHeight);
                 sfx.redraw();
                 var startTime = performance.now();
+                if (invert.checked) sfx.invert();
                 sfx
                     .gamma(parseFloat(gamma.value))
                     .contrast(parseFloat(contrast.value))

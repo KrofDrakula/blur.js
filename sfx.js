@@ -232,6 +232,19 @@
         return this;
     };
     
+    // -----[ Invert ]------
+    SFX.prototype.invert = function() {
+        var canvasCtx = this.canvas.getContext('2d');
+        
+        canvasCtx.save(),
+        canvasCtx.globalCompositeOperation = 'difference';
+        canvasCtx.fillStyle = 'white';
+        canvasCtx.fillRect(0, 0, this.width, this.height),
+        canvasCtx.restore();
+        
+        return this;
+    };
+    
     // -----[ Blur ]-----
     SFX.prototype.blur = function(sigma) {
         if (sigma == 0) return this;
