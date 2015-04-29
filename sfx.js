@@ -169,11 +169,12 @@
             b1 = this._copy(this.canvas),
             b2 = this._copy(this.canvas),
             b1Ctx = b1.getContext('2d'),
-            b2Ctx = b2.getContext('2d');
+            b2Ctx = b2.getContext('2d'),
+            r = this.height / this.width;
         
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, this.width, this.height);
-        canvasCtx.globalCompositeOperation = 'lighter';
+        canvasCtx.globalCompositeOperation = 'lighten';
         
         // null out everything but the blue channel
         b1Ctx.globalCompositeOperation = 'multiply';
@@ -188,7 +189,7 @@
         b1Ctx.fillStyle = '#00ff00';
         b1Ctx.fillRect(0, 0, this.width, this.height);
         b1Ctx.globalCompositeOperation = 'multiply';
-        b1Ctx.drawImage(b2, -distance/2, -distance/2, this.width + distance, this.height + distance);
+        b1Ctx.drawImage(b2, -distance/2, -distance/2 * r, this.width + distance, this.height + distance * r);
         
         canvasCtx.drawImage(b1, 0, 0);
         
@@ -198,7 +199,7 @@
         b1Ctx.fillStyle = '#ff0000';
         b1Ctx.fillRect(0, 0, this.width, this.height);
         b1Ctx.globalCompositeOperation = 'multiply';
-        b1Ctx.drawImage(b2, -distance, -distance, this.width + distance * 2, this.height + distance * 2);
+        b1Ctx.drawImage(b2, -distance, -distance * r, this.width + distance * 2, this.height + distance * 2 * r);
         
         canvasCtx.drawImage(b1, 0, 0);
         
