@@ -16,18 +16,25 @@
         <ul>
             <li>Image: <input type="range" min="0" max="6" step="1" value="0" name="image"/></li>
             <li>Gamma: <input type="range" min="0.5" max="2" step="0.01" value="1" name="gamma"/></li>
+            <li>Contrast: <input type="range" min="-1" max="1" step="0.01" value="0" name="contrast"/></li>
+            <li>Brightness: <input type="range" min="-1" max="1" step="0.01" value="0" name="brightness"/></li>
             <li>Tint: <input type="range" min="0" max="1" step="0.01" value="0" name="tint"/> <input type="color" value="#ff0099" name="tint-color"/></li>
+            <li>Overlay: <input type="range" min="0" max="1" step="0.01" value="0" name="overlay"/> <input type="color" value="#ffcc00" name="overlay-color"/></li>
             <li>Blur: <input type="range" min="0" max="10" step="0.01" value="0" name="blur"/></li>
             <li>Chroma: <input type="range" min="0" max="50" step="0.01" value="0" name="chroma"/></li>
             <li>Grain: <input type="range" min="0" max="1" step="0.01" value="0" name="grain"/></li>
         </ul>
         <script src="sfx.js"></script>
         <script>
-            var sfx = new SFX(document.querySelector('#e')),
+            var sfx = new SFX(document.querySelector('#a')),
                 image = document.querySelector('input[name=image]'),
                 gamma = document.querySelector('input[name=gamma]'),
+                contrast = document.querySelector('input[name=contrast]'),
+                brightness = document.querySelector('input[name=brightness]'),
                 tint = document.querySelector('input[name=tint]'),
                 tintColor = document.querySelector('input[name=tint-color]'),
+                overlay = document.querySelector('input[name=overlay]'),
+                overlayColor = document.querySelector('input[name=overlay-color]'),
                 chroma = document.querySelector('input[name=chroma]'),
                 blur = document.querySelector('input[name=blur]'),
                 grain = document.querySelector('input[name=grain]');
@@ -35,13 +42,7 @@
             sfx.init(function(canvas) {
                 canvas.style.maxWidth = '100%';
                 document.body.appendChild(canvas);
-                image.addEventListener('change', refresh);
-                gamma.addEventListener('change', refresh);
-                tint.addEventListener('change', refresh);
-                tintColor.addEventListener('change', refresh);
-                chroma.addEventListener('change', refresh);
-                blur.addEventListener('change', refresh);
-                grain.addEventListener('change', refresh);
+                document.body.addEventListener('change', refresh);
                 refresh();
             });
             
@@ -52,7 +53,10 @@
                 sfx.redraw();
                 sfx
                     .gamma(parseFloat(gamma.value))
+                    .contrast(parseFloat(contrast.value))
+                    .brightness(parseFloat(brightness.value))
                     .tint(tintColor.value, parseFloat(tint.value))
+                    .overlay(overlayColor.value, parseFloat(overlay.value))
                     .blur(parseFloat(blur.value))
                     .chromatic(parseFloat(chroma.value))
                     .grain(parseFloat(grain.value));

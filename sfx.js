@@ -78,9 +78,60 @@
         
         canvasCtx.save();
         canvasCtx.globalAlpha = clamp(0, 1, amount);
+        canvasCtx.globalCompositeOperation = 'hue';
+        canvasCtx.fillStyle = color;
+        canvasCtx.fillRect(0, 0, this.width, this.height);
+        canvasCtx.restore();
+        
+        return this;
+    };
+    
+    // -----[ Overlay ]-----
+    SFX.prototype.overlay = function(color, amount) {
+        var canvasCtx = this.canvas.getContext('2d');
+        
+        canvasCtx.save();
+        canvasCtx.globalAlpha = clamp(0, 1, amount);
         canvasCtx.globalCompositeOperation = 'multiply';
         canvasCtx.fillStyle = color;
         canvasCtx.fillRect(0, 0, this.width, this.height);
+        canvasCtx.restore();
+        
+        return this;
+    };
+    
+    // -----[ Brightness ]-----
+    SFX.prototype.brightness = function(amount) {
+        amount = clamp(-1, 1, amount);
+        var canvasCtx = this.canvas.getContext('2d');
+        
+        canvasCtx.save();
+        canvasCtx.globalAlpha = Math.abs(amount);
+        canvasCtx.globalCompositeOperation = amount < 0 ? 'darken' : 'lighten';
+        canvasCtx.fillStyle = amount < 0 ? 'black' : 'white';
+        canvasCtx.fillRect(0, 0, this.width, this.height);
+        canvasCtx.restore();
+        
+        return this;
+    };
+    
+    // -----[ Contrast ]-----
+    SFX.prototype.contrast = function(amount) {
+        amount = clamp(-1, 1, amount);
+        var canvasCtx = this.canvas.getContext('2d');
+        
+        canvasCtx.save();
+        canvasCtx.globalAlpha = Math.abs(amount);
+        if (amount > 0) {
+            canvasCtx.globalCompositeOperation = 'overlay';
+            canvasCtx.drawImage(this.canvas, 0, 0);
+        } else {
+            canvasCtx.globalCompositeOperation = 'multiply';
+            canvasCtx.fillStyle = '#777777';
+            canvasCtx.fillRect(0, 0, this.width, this.height);
+            canvasCtx.globalCompositeOperation = 'screen';
+            canvasCtx.drawImage(this.canvas, 0, 0);
+        }
         canvasCtx.restore();
         
         return this;
@@ -106,7 +157,7 @@
         
         canvasCtx.save();
         canvasCtx.globalAlpha = amount;
-        canvasCtx.globalCompositeOperation = 'multiply';
+        canvasCtx.globalCompositeOperation = 'overlay';
         canvasCtx.drawImage(b, 0, 0);
         canvasCtx.restore();
             
