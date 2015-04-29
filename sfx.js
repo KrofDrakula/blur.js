@@ -47,6 +47,7 @@
     
     SFX.prototype.restore = function(amount) {
         amount = typeof amount == 'undefined' ? 1 : amount;
+        if (amount == 0) return this;
         var ctx = this.canvas.getContext('2d');
         ctx.save();
         ctx.globalAlpha = amount;
@@ -56,6 +57,7 @@
     
     // -----[ Gamma ]-----
     SFX.prototype.gamma = function(gamma) {
+        if (gamma == 1) return this;
         gamma = clamp(0.5, 2, gamma);
         var canvasCtx = this.canvas.getContext('2d');
         canvasCtx.save();
@@ -74,6 +76,7 @@
     
     // -----[ Tint ]-----
     SFX.prototype.tint = function(color, amount) {
+        if (amount == 0) return this;
         var canvasCtx = this.canvas.getContext('2d');
         
         canvasCtx.save();
@@ -88,6 +91,7 @@
     
     // -----[ Overlay ]-----
     SFX.prototype.overlay = function(color, amount) {
+        if (amount == 0) return this;
         var canvasCtx = this.canvas.getContext('2d');
         
         canvasCtx.save();
@@ -102,6 +106,7 @@
     
     // -----[ Brightness ]-----
     SFX.prototype.brightness = function(amount) {
+        if (amount == 0) return this;
         amount = clamp(-1, 1, amount);
         var canvasCtx = this.canvas.getContext('2d');
         
@@ -117,6 +122,7 @@
     
     // -----[ Contrast ]-----
     SFX.prototype.contrast = function(amount) {
+        if (amount == 0) return this;
         amount = clamp(-1, 1, amount);
         var canvasCtx = this.canvas.getContext('2d');
         
@@ -137,8 +143,25 @@
         return this;
     };
     
+    // -----[ Saturation ]-----
+    SFX.prototype.saturation = function(amount) {
+        if (amount == 0) return this;
+        amount = clamp(-1, 1, amount);
+        var canvasCtx = this.canvas.getContext('2d');
+        
+        canvasCtx.save();
+        canvasCtx.globalAlpha = amount < 0 ? -amount : amount / 4;
+        canvasCtx.globalCompositeOperation = 'saturation';
+        canvasCtx.fillStyle = amount < 0 ? 'black' : 'red';
+        canvasCtx.fillRect(0, 0, this.width, this.height);
+        canvasCtx.restore();
+        
+        return this;
+    };
+    
     // -----[ Grain ]-----
     SFX.prototype.grain = function(amount) {
+        if (amount == 0) return this;
         var canvasCtx = this.canvas.getContext('2d'),
             b = this._copy(this.canvas),
             bCtx = b.getContext('2d'),
@@ -165,6 +188,7 @@
     
     // -----[ Chromatic aberration ]-----
     SFX.prototype.chromatic = function(distance) {
+        if (distance == 0) return this;
         var canvasCtx = this.canvas.getContext('2d'),
             b1 = this._copy(this.canvas),
             b2 = this._copy(this.canvas),
@@ -210,6 +234,7 @@
     
     // -----[ Blur ]-----
     SFX.prototype.blur = function(sigma) {
+        if (sigma == 0) return this;
         var canvasCtx = this.canvas.getContext('2d'),
             buffer    = this.doc.createElement('canvas'),
             bufferCtx = buffer.getContext('2d'),
